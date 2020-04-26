@@ -1,57 +1,95 @@
 <template>
-  <div>
-    <div v-if="!hasGameStarted">
-      <form @submit.prevent="addPlayer()" ref="addPlayerForm(playerName)">
-        <input type="text" name="name" v-model="playerName" />
-        <input type="submit" value="Add Player" />
-      </form>
-      <input type="submit" value="Start Game" v-on:click.prevent="startGame" />
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th v-for="player in players" v-bind:key="player.name">
-            {{ player.name }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-show="!isFirstRound"
-          v-for="(round, index) in rounds"
-          v-bind:key="index"
+  <div class="container">
+    <div v-if="!hasGameStarted" class="add-player-form">
+      <form
+        @submit.prevent="addPlayer()"
+        ref="addPlayerForm"
+        class="add-player-form"
+      >
+        <input
+          type="text"
+          name="name"
+          v-model="playerName"
+          class="input add-player-form-input"
+          required
+        />
+        <button type="submit" class="btn add-player-form-btn">
+          Agregar Jugador
+        </button>
+
+        <button
+          @click.prevent="startGame"
+          class="btn start-game-btn"
+          :disabled="players.length <= 1"
         >
-          <td
-            v-for="(player, p) in players"
-            v-bind:key="player.name + p + index"
-          >
-            {{ round[player.name] }}
-          </td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <th v-for="player in players" v-bind:key="player.name">
-            {{ player.score }}
-          </th>
-        </tr>
-        <tr v-if="!isGameOver && hasGameStarted">
-          <th v-for="player in players" v-bind:key="player.name">
-            <input type="number" v-model="scores[player.name]" />
-          </th>
-          <th>
+          Comenzar juego
+        </button>
+      </form>
+    </div>
+
+    <div>
+      <div class="flex">
+        <div v-for="player in players" v-bind:key="player.name">
+          <h2>{{ player.name }}</h2>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="flex" v-for="(round, index) in rounds" v-bind:key="index">
+        <div
+          class="round-score"
+          v-for="(player, p) in players"
+          v-bind:key="player.name + p + index"
+        >
+          {{ round[player.name] }}
+        </div>
+      </div>
+
+      <!--div class="flex" v-if="!isGameOver && hasGameStarted"-->
+      <form
+        @submit.prevent="addRound"
+        v-if="!isGameOver && hasGameStarted"
+        ref="addRoundForm"
+      >
+        <div class="flex">
+          <div v-for="(player, index) in players" v-bind:key="player.name">
             <input
-              type="submit"
-              value="Add score"
-              v-on:click.prevent="addRound"
+              :tabindex="index + 1"
+              type="number"
+              class="input add-score-input"
+              v-model="scores[player.name]"
+              ref="playerScore"
             />
-          </th>
-        </tr>
-        <tr v-if="isGameOver">
-          <th>{{ result }}</th>
-        </tr>
-      </tfoot>
-    </table>
+          </div>
+        </div>
+
+        <div class="flex">
+          <button
+            type="submit"
+            class="btn"
+            @click.prevent="addRound"
+            style="width: 100%;"
+          >
+            Proxima Ronda
+          </button>
+        </div>
+      </form>
+
+      <!--div class="flex">
+        <div v-for="player in players" v-bind:key="player.name">{{ player.score }}</div>
+      </div-->
+
+      <!--/div-->
+      <div class v-if="isGameOver">
+        <div class="flex">
+          <h4>{{ result }}</h4>
+        </div>
+        <div class="flex">
+          <button class="btn" @click.prevent="resetGame">Jugar de nuevo</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -86,6 +124,8 @@ export default class ScorePad extends Vue {
     });
 
     this.playerName = "";
+
+    (this.$refs.addPlayerForm as HTMLFormElement).reset();
   }
 
   get isFirstRound(): boolean {
@@ -111,12 +151,41 @@ export default class ScorePad extends Vue {
     this.rounds.push(round);
 
     this.scores = {};
+
+    (this.$refs.addRoundForm as HTMLFormElement).reset();
+
+    (this.$refs.playerScore as HTMLInputElement[])[0].focus();
   }
 
   startGame() {
     this.hasGameStarted = true;
   }
+
+  resetGame() {
+    this.hasGameStarted = false;
+    this.players = [];
+    this.isGameOver = false;
+    this.scores = {};
+    this.rounds = [];
+  }
 }
 </script>
 
-<style></style>
+<style scoped lang="scss">
+.round-score {
+  font-size: 1.5rem;
+}
+
+.add-player-form {
+  margin-bottom: 1rem;
+}
+
+.add-score-input {
+  width: 100px;
+  max-width: 100%;
+}
+
+.add-round-form {
+  display: contents;
+}
+</style>
