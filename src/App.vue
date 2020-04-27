@@ -12,16 +12,16 @@
 $btn-bg-color: #42b983;
 $btn-color: #2c3e50;
 
-* {
-  font-size: 1rem;
-}
-
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+.highlighted {
+  font-weight: bold;
 }
 
 #nav {
@@ -43,16 +43,16 @@ $btn-color: #2c3e50;
 
 .btn {
   background: $btn-bg-color;
-  color: $btn-color;
+  border-color: $btn-color;
 
-  border: 0;
+  color: #fff;
   border-color: darken($color: $btn-bg-color, $amount: 30);
   outline-color: darken($color: $btn-bg-color, $amount: 30);
 
   border-radius: 0.25rem;
-  padding: 0.5rem;
+  padding: 1rem;
   margin: 0.5rem;
-  height: 2rem;
+  font-size: 1.5rem;
 }
 
 .btn[disabled] {
@@ -62,9 +62,12 @@ $btn-color: #2c3e50;
 .input {
   height: 1rem;
   border: 1px solid #ccc;
-  border-radius: 0.25rem;
-  padding: 0.5rem;
-  font-size: 1rem;
+  border-radius: 0;
+  padding: 1rem;
+  margin: 0.5rem;
+  font-size: 1.5rem;
+  border: 0;
+  border-bottom: 1px solid #ccc;
 }
 
 // Grid system

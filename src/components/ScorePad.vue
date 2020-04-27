@@ -34,11 +34,12 @@
         </div>
       </div>
 
-      <hr />
+      <hr v-if="!isGameOver && hasGameStarted" />
 
       <div class="flex" v-for="(round, index) in rounds" v-bind:key="index">
         <div
           class="round-score"
+          v-bind:class="{ highlighted: isLastRound(index) }"
           v-for="(player, p) in players"
           v-bind:key="player.name + p + index"
         >
@@ -48,7 +49,7 @@
 
       <!--div class="flex" v-if="!isGameOver && hasGameStarted"-->
       <form
-        @submit.prevent="addRound"
+        @submit.prevent="addRound()"
         v-if="!isGameOver && hasGameStarted"
         ref="addRoundForm"
       >
@@ -57,6 +58,7 @@
             <input
               :tabindex="index + 1"
               type="number"
+              required
               class="input add-score-input"
               v-model="scores[player.name]"
               ref="playerScore"
@@ -65,12 +67,7 @@
         </div>
 
         <div class="flex">
-          <button
-            type="submit"
-            class="btn"
-            @click.prevent="addRound"
-            style="width: 100%;"
-          >
+          <button type="submit" class="btn" style="width: 100%;">
             Proxima Ronda
           </button>
         </div>
@@ -83,7 +80,7 @@
       <!--/div-->
       <div class v-if="isGameOver">
         <div class="flex">
-          <h4>{{ result }}</h4>
+          <h1>{{ result }}</h1>
         </div>
         <div class="flex">
           <button class="btn" @click.prevent="resetGame">Jugar de nuevo</button>
@@ -132,11 +129,14 @@ export default class ScorePad extends Vue {
     return this.rounds.length === 1;
   }
 
+  isLastRound(index: number): boolean {
+    return this.rounds.length === index + 1;
+  }
+
   addRound() {
     const round: Record<string, number> = {};
     this.players.forEach((player: Player) => {
       const score: number = this.scores[player.name];
-      //   this.rounds.push(score);
       player.score += +score;
 
       round[player.name] = player.score;
@@ -173,7 +173,9 @@ export default class ScorePad extends Vue {
 
 <style scoped lang="scss">
 .round-score {
-  font-size: 1.5rem;
+  font-size: 2rem;
+  text-align: center;
+  padding: 1rem;
 }
 
 .add-player-form {
@@ -183,6 +185,7 @@ export default class ScorePad extends Vue {
 .add-score-input {
   width: 100px;
   max-width: 100%;
+  text-align: center;
 }
 
 .add-round-form {
